@@ -11,12 +11,16 @@
 
 # Busca o copypasta do reddit
 import praw
+import random
 from six.moves import urllib
 
 def busca_copy_pasta():
-  reddit = praw.Reddit()
+  reddit = praw.Reddit('brpasta')
 
-  for submission in reddit.subreddit('learnpython').hot(limit=10):
-      print(submission.title)
+  try:
+    post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=1)])
+    print(post.selftext)
+  except Exception as err:
+    print(err)
 
 busca_copy_pasta()
