@@ -1,5 +1,5 @@
 ###         Inicio Idioma
-print("Choose your language: pt or en")
+print("Choose your language: pt (portuguese) or en (english)")
 var_idioma = input("Language: ")
 var_idiomack = False
 if var_idioma.lower() == "en":
@@ -8,7 +8,7 @@ if var_idioma.lower() == "en":
 elif var_idioma.lower() == "pt":
   var_idiomack = True
   # print("Português")
-elif var_idiomack == False:
+elif not var_idiomack:
   print("This language is not valid")
   exit()
 
@@ -44,7 +44,7 @@ elif var_categoria.lower() == "menace":
 elif var_categoria.lower() == "sorry":
   var_categoria_ck = True
   var_categoria_cod = 8
-elif var_categoria_ck == False:
+elif not var_categoria_ck:
   print("This category does not exists")
   exit()
 
@@ -68,14 +68,14 @@ elif cp_size == "large":
   cp_lenght = 50000
   cp_min = 3500
   cp_size_ck = True
-elif cp_size_ck == False:
+elif not cp_size_ck:
   cp_lenght = 1000
   cp_min = 0
   print("Pequeno")
 ###         Fim tamanho copypasta
 
 
-###         Inicio Busca o copypasta do reddit
+###         Inicio Busca o copypasta d
 import praw
 import random
 
@@ -85,8 +85,13 @@ def busca_copy_pasta():
   min_lenght = cp_min # Menor que isso
   copypasta_ck = False
   try:
-    post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=None)])
-    if len((post.selftext)) <= max_length and len((post.selftext)) > min_lenght: # Trata o tamanho do texto
+    # Separa por Idioma
+    if var_idioma == "pt":
+      post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=None)])
+    elif var_idioma == "en":
+      post = random.choice([x for x in reddit.subreddit('copypasta').top("all", limit=None)])
+    # Trata o tamanho do texto
+    if len((post.selftext)) <= max_length and len((post.selftext)) > min_lenght:
       copypasta_ck = True
     if copypasta_ck:
       print((post.selftext))
