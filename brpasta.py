@@ -23,3 +23,7 @@ def busca_copy_pasta():
     print(err)
 
 busca_copy_pasta()
+
+#teste
+#teste
+#oi
