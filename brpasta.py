@@ -1,5 +1,3 @@
-"""
-#
 ### Inicio Idioma
 print("Choose your language: pt or en")
 var_idioma = input("Language: ")
@@ -17,7 +15,7 @@ elif var_idiomack == False:
 print("Language chosen: " + var_idioma.lower())
 ### Fim Idioma
 
-###Inicio Categoria
+### Inicio Categoria
 var_categoria = input("Choose category: drugs, politics, memes, random, mock, compliment, menace, sorry: ")
 var_categoria_ck = False
 var_categoria_cod: int
@@ -52,9 +50,9 @@ elif var_categoria_ck == False:
 
 print("Category chosen: " + var_categoria.lower())
 ### Fim Categoria
-"""
 
-# Busca o copypasta do reddit
+
+# Inicio Busca o copypasta do reddit
 import praw
 import random
 
@@ -69,6 +67,4 @@ def busca_copy_pasta():
 
 busca_copy_pasta()
 
-#teste
-#teste
-#oi
+# Fim Busca o copypasta do reddit
