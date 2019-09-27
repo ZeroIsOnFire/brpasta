@@ -10,7 +10,6 @@ elif selcat != 0:
     print("Muito bem! Você selecionou: " + catg[1])
 
 # Busca o copypasta do reddit
-# outra celula
 from six.moves import urllib
 
 def busca_copy_pasta
