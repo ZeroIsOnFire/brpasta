@@ -1,12 +1,12 @@
 ###     Inicio Idioma
-print("Choose your language: pt (portuguese) or en (english)")
+print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
 var_idioma = input("Language: ").lower()
 if var_idioma.lower() != "en" and var_idioma.lower() != "pt":
   var_idioma = "emoji"
 ###     Fim Idioma
 
 ###     Inicio tamanho copypasta
-cp_size = input("Choose your copypasta lenght. It can be short, medium, large, or ANY!").lower()
+cp_size = input("Choose your copypasta lenght. It can be short, medium, large, or type anything for any size!").lower()
 
 if cp_size == "short":
   cp_lenght = 1000
@@ -17,9 +17,6 @@ elif cp_size == "medium":
 elif cp_size == "large":
   cp_lenght = 25000
   cp_min = 3501
-elif cp_size == "any":
-  cp_lenght = 0
-  cp_min = 0
 elif cp_size != "short" and cp_size != "medium" and cp_size != "large":
   cp_size = "any"
   cp_lenght = 0
@@ -34,11 +31,8 @@ import random
 
 def busca_copy_pasta():
   reddit = praw.Reddit('brpasta')
-  max_length = cp_lenght  # Maior que isso
-  min_lenght = cp_min  # Menor que isso
   copypasta_ck = False
   try:
-
     # Separa por Idioma
     if var_idioma == "pt":
       post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=None)])
@@ -50,7 +44,7 @@ def busca_copy_pasta():
     # Procura com tamanho / se nao achar busca de novo (mais demorado)
     if cp_size != "any":
       # Trata o tamanho do texto
-      if len((post.selftext)) <= max_length and len((post.selftext)) > min_lenght:
+      if len((post.selftext)) <= cp_lenght and len((post.selftext)) > cp_min:
         copypasta_ck = True
       if copypasta_ck:
         print((post.selftext))
@@ -80,11 +74,7 @@ busca_copy_pasta()
 ###     Fim Busca o copypasta do reddit
 
 
-
-
-
 # dump
-
 """
 ###     Inicio Categoria
 if var_idioma_ck:
