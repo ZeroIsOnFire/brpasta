@@ -1,6 +1,7 @@
 import praw
 import random
 
+# Caso seja necessário adicionar um novo idioma ou subreddit, adicionar aqui
 SUBREDDITS = {
   "pt": "PastaPortuguesa",
   "en": "copypasta",
@@ -9,12 +10,17 @@ SUBREDDITS = {
 
 # Busca uma copypasta no reddit
 def busca_copy_pasta(var_idioma):
+  # Busca os 100 primeiros posts do Hot do subreddit selecionado
   reddit = praw.Reddit('brpasta')
-  posts = reddit.subreddit(SUBREDDITS[var_idioma]).hot()
+  posts = reddit.subreddit(SUBREDDITS[var_idioma]).hot(limit=100)
+
+  # Filtra todos os posts que não tem texto vazio
   filtered_posts = list(filter(lambda x: x.selftext.strip(), list(posts)))
+
   if len(filtered_posts) == 0:
     return 'No pasta found'
   else:
+    # Retorna post aleatório
     return random.choice(filtered_posts).selftext
 
 try:
@@ -22,6 +28,7 @@ try:
   print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
   var_idioma = input("Language: ").lower().strip()
 
+  # Caso não encontre o idioma na constante de subreddits, força usar emoji
   if not var_idioma in SUBREDDITS:
     var_idioma = "emoji"
 
