@@ -1,78 +1,38 @@
-###     Inicio Idioma
-print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
-var_idioma = input("Language: ").lower()
-if var_idioma.lower() != "en" and var_idioma.lower() != "pt":
-  var_idioma = "emoji"
-###     Fim Idioma
-
-###     Inicio tamanho copypasta
-cp_size = input("Choose your copypasta lenght. It can be short, medium, large, or type anything for any size!").lower()
-
-if cp_size == "short":
-  cp_lenght = 1000
-  cp_min = 0
-elif cp_size == "medium":
-  cp_lenght = 3500
-  cp_min = 1001
-elif cp_size == "large":
-  cp_lenght = 25000
-  cp_min = 3501
-elif cp_size != "short" and cp_size != "medium" and cp_size != "large":
-  cp_size = "any"
-  cp_lenght = 0
-  cp_min = 0
-###     Fim tamanho copypasta
-
-
-###     Inicio Busca o copypasta d
 import praw
 import random
 
+subreddit_map = {
+  "pt": "PastaPortuguesa",
+  "en": "copypasta",
+  "emoji": "emojipasta"
+}
 
-def busca_copy_pasta():
+# Busca uma copypasta no reddit
+def busca_copy_pasta(var_idioma):
   reddit = praw.Reddit('brpasta')
-  copypasta_ck = False
+
   try:
-    # Separa por Idioma
-    if var_idioma == "pt":
-      post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=None)])
-    elif var_idioma == "en":
-      post = random.choice([x for x in reddit.subreddit('copypasta').top("all", limit=None)])
-    elif var_idioma == "emoji":
-      post = random.choice([x for x in reddit.subreddit('emojipasta').top("all", limit=None)])
-
-    # Procura com tamanho / se nao achar busca de novo (mais demorado)
-    if cp_size != "any":
-      # Trata o tamanho do texto
-      if len((post.selftext)) <= cp_lenght and len((post.selftext)) > cp_min:
-        copypasta_ck = True
-      if copypasta_ck:
-        print((post.selftext))
-        print("Tamanho da string:" + str(len((post.selftext))))
-      elif not copypasta_ck:
-        # Se não encontra, repete até encontrar
-        busca_copy_pasta()
-
     # Procura de qualquer jeito (mais rapido)
-    if cp_size == "any":
-      copypasta_ck = True
-      if var_idioma == 'pt':
-        post = random.choice([x for x in reddit.subreddit('PastaPortuguesa').top("all", limit=None)])
-      elif var_idioma == "en":
-        post = random.choice([x for x in reddit.subreddit('copypasta').top("all", limit=None)])
-      elif var_idioma == "emoji":
-        post = random.choice([x for x in reddit.subreddit('emojipasta').top("all", limit=None)])
-    if copypasta_ck:
-      print(post.selftext)
-      print("Tamanho da string:" + str(len(post.selftext)))
+    posts = reddit.subreddit(subreddit_map[var_idioma]).hot()
+    postlist = list(posts)
+    post = random.choice(postlist)
+    text = post.selftext
+
+    if not text.strip():
+      busca_copy_pasta(var_idioma)
+    else:
+      print(text)
 
   except Exception as err:
-    print(err)
+    print("Erro: " + err)
 
-busca_copy_pasta()
+# Input de lingua
+print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
+var_idioma = input("Language: ").lower().strip()
+if var_idioma.lower() != "en" and var_idioma.lower() != "pt":
+  var_idioma = "emoji"
 
-###     Fim Busca o copypasta do reddit
-
+busca_copy_pasta(var_idioma)
 
 # dump
 """
