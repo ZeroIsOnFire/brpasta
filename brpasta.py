@@ -1,7 +1,7 @@
 import praw
 import random
 
-subreddit_map = {
+SUBREDDITS = {
   "pt": "PastaPortuguesa",
   "en": "copypasta",
   "emoji": "emojipasta"
@@ -10,29 +10,25 @@ subreddit_map = {
 # Busca uma copypasta no reddit
 def busca_copy_pasta(var_idioma):
   reddit = praw.Reddit('brpasta')
+  posts = reddit.subreddit(SUBREDDITS[var_idioma]).hot()
+  filtered_posts = list(filter(lambda x: x.selftext.strip(), list(posts)))
+  if len(filtered_posts) == 0:
+    return 'No pasta found'
+  else:
+    return random.choice(filtered_posts).selftext
 
-  try:
-    # Procura de qualquer jeito (mais rapido)
-    posts = reddit.subreddit(subreddit_map[var_idioma]).hot()
-    postlist = list(posts)
-    post = random.choice(postlist)
-    text = post.selftext
+try:
+  # Input de lingua
+  print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
+  var_idioma = input("Language: ").lower().strip()
 
-    if not text.strip():
-      busca_copy_pasta(var_idioma)
-    else:
-      print(text)
+  if not var_idioma in SUBREDDITS:
+    var_idioma = "emoji"
 
-  except Exception as err:
-    print("Erro: " + err)
+  print(busca_copy_pasta(var_idioma))
 
-# Input de lingua
-print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
-var_idioma = input("Language: ").lower().strip()
-if var_idioma.lower() != "en" and var_idioma.lower() != "pt":
-  var_idioma = "emoji"
-
-busca_copy_pasta(var_idioma)
+except Exception as err:
+  print(err)
 
 # dump
 """
