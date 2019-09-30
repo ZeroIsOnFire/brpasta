@@ -1,5 +1,8 @@
+import os
 import praw
 import random
+import discord
+from dotenv import load_dotenv
 
 # Caso seja necessário adicionar um novo idioma ou subreddit, adicionar aqui
 SUBREDDITS = {
@@ -8,6 +11,12 @@ SUBREDDITS = {
   "emoji": "emojipasta"
 }
 
+# Retorna uma instancia do reddit
+def fetch_reddit_instance():
+  return praw.Reddit(client_id=os.getenv('REDDIT_CLIENT_ID'),
+                     client_secret=os.getenv('REDDIT_CLIENT_SECRET'),
+                     user_agent=os.getenv('REDDIT_AGENT'))
+
 # Filtra os posts de acordo com o necessário
 def filtrar_posts(post):
   return post.selftext.strip()
@@ -15,7 +24,7 @@ def filtrar_posts(post):
 # Busca uma copypasta no reddit
 def busca_copy_pasta(var_idioma):
   # Busca os 100 primeiros posts do Hot do subreddit selecionado
-  reddit = praw.Reddit('brpasta')
+  reddit = fetch_reddit_instance()
   posts = reddit.subreddit(SUBREDDITS[var_idioma]).top(limit=100)
 
   # Filtra todos os posts que não tem texto vazio
@@ -28,6 +37,8 @@ def busca_copy_pasta(var_idioma):
     return random.choice(filtered_posts).selftext
 
 try:
+  load_dotenv()
+
   # Input de idioma
   print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
   var_idioma = input("Language: ").lower().strip()

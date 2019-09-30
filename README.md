@@ -6,7 +6,7 @@ Para instalar os requisitos, digite:
 
     pip install -r requirements.txt
 
-Copie o arquivo praw.ini.example e renomeie para praw.ini e coloque os parametros de acordo com seu app do redit ( client_id, client_secret, user_agent )
+Copie o arquivo .env.example e renomeie para .env e coloque os parametros de acordo com o necessário
 
 Para utilizar:
 
