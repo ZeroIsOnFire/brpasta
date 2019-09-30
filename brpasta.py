@@ -8,14 +8,18 @@ SUBREDDITS = {
   "emoji": "emojipasta"
 }
 
+# Filtra os posts de acordo com o necessário
+def filtrar_posts(post):
+  return post.selftext.strip()
+
 # Busca uma copypasta no reddit
 def busca_copy_pasta(var_idioma):
   # Busca os 100 primeiros posts do Hot do subreddit selecionado
   reddit = praw.Reddit('brpasta')
-  posts = reddit.subreddit(SUBREDDITS[var_idioma]).hot(limit=100)
+  posts = reddit.subreddit(SUBREDDITS[var_idioma]).top(limit=100)
 
   # Filtra todos os posts que não tem texto vazio
-  filtered_posts = list(filter(lambda x: x.selftext.strip(), list(posts)))
+  filtered_posts = list(filter(filtrar_posts, list(posts)))
 
   if len(filtered_posts) == 0:
     return 'No pasta found'
