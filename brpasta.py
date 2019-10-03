@@ -3,17 +3,33 @@ import praw
 import random
 import discord
 from dotenv import load_dotenv
+from discord.ext import commands
+from textwrap import wrap
 
-# Caso seja necessário adicionar um novo idioma ou subreddit, adicionar aqui
+MAX_CHARACTERS = 2000
+MAX_PASTAS = 100
+
 SUBREDDITS = {
   "pt": "PastaPortuguesa",
   "en": "copypasta",
   "emoji": "emojipasta"
 }
 
-# Retorna uma instancia do reddit
-def fetch_reddit_instance():
-  return praw.Reddit(client_id=os.getenv('REDDIT_CLIENT_ID'),
+PASTA_HELP_MESSAGE='''
+  Responds with a copypasta from reddit.
+  Receives language as parameters, with 'en', 'pt' and 'emoji' as options, default as 'en' and
+  if you type anything, it changes to 'emoji'
+'''.strip()
+
+# Configurações de ambiente
+load_dotenv()
+
+# Configurações do discord
+token = os.getenv('DISCORD_TOKEN')
+bot = commands.Bot(command_prefix=os.getenv('DISCORD_PREFIX'))
+
+# Configurações do Reddit
+reddit = praw.Reddit(client_id=os.getenv('REDDIT_CLIENT_ID'),
                      client_secret=os.getenv('REDDIT_CLIENT_SECRET'),
                      user_agent=os.getenv('REDDIT_AGENT'))
 
@@ -23,9 +39,11 @@ def filtrar_posts(post):
 
 # Busca uma copypasta no reddit
 def busca_copy_pasta(var_idioma):
+  if not var_idioma in SUBREDDITS:
+    var_idioma = "emoji"
+
   # Busca os 100 primeiros posts do Hot do subreddit selecionado
-  reddit = fetch_reddit_instance()
-  posts = reddit.subreddit(SUBREDDITS[var_idioma]).top(limit=100)
+  posts = reddit.subreddit(SUBREDDITS[var_idioma]).hot(limit=MAX_PASTAS)
 
   # Filtra todos os posts que não tem texto vazio
   filtered_posts = list(filter(filtrar_posts, list(posts)))
@@ -36,18 +54,22 @@ def busca_copy_pasta(var_idioma):
     # Retorna post aleatório
     return random.choice(filtered_posts).selftext
 
-try:
-  load_dotenv()
+# Ao conectar no discord
+@bot.event
+async def on_ready():
+    print(f'{bot.user.name} is ready to shitpost!')
 
-  # Input de idioma
-  print("Choose your language: pt (portuguese) or en (english) or type anything for a surprise!")
-  var_idioma = input("Language: ").lower().strip()
+# Recebe comando de busca de pasta
+@bot.command(name='pasta', help=PASTA_HELP_MESSAGE)
+async def summon_pasta(message, language='en'):
+  try:
+    pasta = busca_copy_pasta(language)
+    chunks = wrap(pasta, MAX_CHARACTERS)
+    # Imprime as mensagens em chunks de 2000, por causa de limitações do discord
+    for chunk in chunks:
+      await message.send(chunk)
+  except Exception as err:
+    print(err)
+    await message.send('Sorry, I failed :(')
 
-  # Caso não encontre o idioma na constante de subreddits, força usar emoji
-  if not var_idioma in SUBREDDITS:
-    var_idioma = "emoji"
-
-  print(busca_copy_pasta(var_idioma))
-
-except Exception as err:
-  print(err)
+bot.run(token)
