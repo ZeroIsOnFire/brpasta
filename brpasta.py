@@ -1,7 +1,9 @@
 import os
+import io
 import praw
 import random
 import discord
+import aiohttp
 from dotenv import load_dotenv
 from discord.ext import commands
 from textwrap import wrap
@@ -13,6 +15,10 @@ SUBREDDITS = {
   "pt": "PastaPortuguesa",
   "en": "copypasta",
   "emoji": "emojipasta"
+}
+
+AI_SOURCES = {
+  "waifu": "https://www.thiswaifudoesnotexist.net"
 }
 
 PASTA_HELP_MESSAGE='''
@@ -54,6 +60,27 @@ def busca_copy_pasta(var_idioma):
     # Retorna post aleatório
     return random.choice(filtered_posts).selftext
 
+# Busca a foto de AI em uma source
+async def buscar_ai(source):
+  if not source in AI_SOURCES:
+    source = "artwork"
+
+  async with aiohttp.ClientSession() as session:
+    if source == 'waifu':
+      id = random.randint(0,100000)
+      url = f'https://www.thiswaifudoesnotexist.net/example-{id}.jpg'
+
+      async with session.get(url) as resp:
+        if resp.status != 200:
+          raise Exception('Request Failed', f'Request failed for {source}')
+        else:
+          return {
+            "raw": io.BytesIO(await resp.read()),
+            "name": "waifu.jpg"
+          }
+    else:
+      return { "raw": '', "name": ''}
+
 # Ao conectar no discord
 @bot.event
 async def on_ready():
@@ -68,6 +95,16 @@ async def summon_pasta(message, language='en'):
     # Imprime as mensagens em chunks de 2000, por causa de limitações do discord
     for chunk in chunks:
       await message.send(chunk)
+  except Exception as err:
+    print(err)
+id
+# Recebe comando de foto de item não existente aleatorio
+@bot.command(name='ai', help=PASTA_HELP_MESSAGE)
+async def summon_ai_picture(message, source='artwork'):
+  try:
+    data = await buscar_ai(source)
+    picture = discord.File(data["raw"], data["name"])
+    await message.send(file=picture)
   except Exception as err:
     print(err)
     await message.send('Sorry, I failed :(')
