@@ -1,5 +1,6 @@
 # brpasta
-Obtenha um post aleatório do r/PastaPortuguesa para o mais alto nivel de argumento em seus posts!
+Obtenha um post aleatório de copypastas do reddit para o mais alto nivel de argumento em seus posts!
+Tambem faz outras coisas aleatórias escondidas(hehe)
 
 # Instalação
 Para instalar os requisitos, digite:
