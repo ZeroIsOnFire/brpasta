@@ -18,13 +18,26 @@ SUBREDDITS = {
 }
 
 AI_SOURCES = {
+  # URL
+  "art": "https://thisartworkdoesnotexist.com/artwork",
+  "cat": "https://thiscatdoesnotexist.com",
+  "horse": "https://thishorsedoesnotexist.com",
+  "person": "https://thispersondoesnotexist.com/image",
+
+  # Waifu - URL
   "waifu": "https://www.thiswaifudoesnotexist.net"
 }
+
+AI_HELP_MESSAGE='''
+  Responds with an AI generated picture.
+  Receives the source as parameters, with 'art', 'cat', ,'horse', 'person' and 'waifu' as options
+  default as 'art' and if you type anything else, it changes to 'art'
+'''.strip()
 
 PASTA_HELP_MESSAGE='''
   Responds with a copypasta from reddit.
   Receives language as parameters, with 'en', 'pt' and 'emoji' as options, default as 'en' and
-  if you type anything, it changes to 'emoji'
+  if you type anything else, it changes to 'emoji'
 '''.strip()
 
 # Configurações de ambiente
@@ -63,23 +76,31 @@ def busca_copy_pasta(var_idioma):
 # Busca a foto de AI em uma source
 async def buscar_ai(source):
   if not source in AI_SOURCES:
-    source = "artwork"
+    source = "art"
 
+  if source == 'waifu':
+    id = random.randint(0,100000)
+    url = f'{AI_SOURCES[source]}/example-{id}.jpg'
+  else:
+    url = AI_SOURCES[source]
+
+  data = await request_image_from(source, url)
+
+  return {
+    "raw": data,
+    "name": f'{source}.jpg'
+  }
+
+# Busca de uma URL e devolve a response
+async def request_image_from(source, url):
   async with aiohttp.ClientSession() as session:
-    if source == 'waifu':
-      id = random.randint(0,100000)
-      url = f'https://www.thiswaifudoesnotexist.net/example-{id}.jpg'
+    header = { "User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0" }
 
-      async with session.get(url) as resp:
-        if resp.status != 200:
-          raise Exception('Request Failed', f'Request failed for {source}')
-        else:
-          return {
-            "raw": io.BytesIO(await resp.read()),
-            "name": "waifu.jpg"
-          }
-    else:
-      return { "raw": '', "name": ''}
+    async with session.get(url, headers=header) as resp:
+      if resp.status != 200:
+        raise Exception('Request Failed', f'Request failed for {source}')
+      else:
+        return io.BytesIO(await resp.read())
 
 # Ao conectar no discord
 @bot.event
@@ -97,10 +118,11 @@ async def summon_pasta(message, language='en'):
       await message.send(chunk)
   except Exception as err:
     print(err)
-id
+
+
 # Recebe comando de foto de item não existente aleatorio
-@bot.command(name='ai', help=PASTA_HELP_MESSAGE)
-async def summon_ai_picture(message, source='artwork'):
+@bot.command(name='ai', help=AI_HELP_MESSAGE)
+async def summon_ai_picture(message, source='art'):
   try:
     data = await buscar_ai(source)
     picture = discord.File(data["raw"], data["name"])
