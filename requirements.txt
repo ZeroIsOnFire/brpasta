@@ -1,4 +1,4 @@
-discord.py==1.2.3
+discord.py==1.4.0
 praw==6.4.0
 python-dotenv==0.10.3
-aiohttp==3.5.4
+aiohttp==3.6.0
