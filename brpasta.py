@@ -19,7 +19,7 @@ SUBREDDITS = {
 
 AI_SOURCES = {
   # URL
-  "art": "https://thisartworkdoesnotexist.com/artwork",
+  "art": "https://thisartworkdoesnotexist.com",
   "cat": "https://thiscatdoesnotexist.com",
   "horse": "https://thishorsedoesnotexist.com",
   "person": "https://thispersondoesnotexist.com/image",
